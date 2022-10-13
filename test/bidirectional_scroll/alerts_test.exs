@@ -15,6 +15,24 @@ defmodule BidirectionalScroll.AlertsTest do
       assert Alerts.list_alerts() == [alert]
     end
 
+    test "list_alerts/1 returns limited alerts" do
+      now = DateTime.utc_now()
+      _older_alert = alert_fixture(started_at: now)
+      recent_alert = alert_fixture(started_at: DateTime.add(now, 15, :second))
+
+      assert Alerts.list_alerts(limit: 1) == [recent_alert]
+    end
+
+    test "list_alerts/1 filters by start time" do
+      now = DateTime.utc_now()
+      recent_alert_time = DateTime.add(now, 15, :second)
+
+      older_alert = alert_fixture(started_at: now)
+      _recent_alert = alert_fixture(started_at: recent_alert_time)
+
+      assert Alerts.list_alerts(started_before: recent_alert_time) == [older_alert]
+    end
+
     test "get_alert!/1 returns the alert with given id" do
       alert = alert_fixture()
       assert Alerts.get_alert!(alert.id) == alert

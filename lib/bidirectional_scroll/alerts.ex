@@ -18,7 +18,23 @@ defmodule BidirectionalScroll.Alerts do
 
   """
   def list_alerts do
-    Repo.all(Alert)
+    list_alerts([])
+  end
+
+  def list_alerts(criteria) when is_list(criteria) do
+    query = from(p in Alert, order_by: [desc: :started_at])
+
+    Enum.reduce(criteria, query, fn
+      {:started_before, started_before}, query when not is_nil(started_before) ->
+        from(q in query, where: q.started_at < ^started_before)
+
+      {:limit, limit}, query ->
+        from(q in query, limit: ^limit)
+
+      _, query ->
+        query
+    end)
+    |> Repo.all()
   end
 
   @doc """

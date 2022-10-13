@@ -17,7 +17,7 @@ defmodule BidirectionalScrollWeb.Router do
   scope "/", BidirectionalScrollWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live "/", Live.ScrollDemoLive
   end
 
   # Other scopes may use custom stacks.

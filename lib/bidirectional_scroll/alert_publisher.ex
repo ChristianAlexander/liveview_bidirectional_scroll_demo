@@ -36,11 +36,15 @@ defmodule BidirectionalScroll.AlertPublisher do
   # Creates an unresolved alert
   defp create_alert() do
     Logger.info("Creating new alert")
-    Alerts.create_alert(%{started_at: DateTime.utc_now()})
+    {:ok, alert} = Alerts.create_alert(%{started_at: DateTime.utc_now()})
+
+    Phoenix.PubSub.broadcast(BidirectionalScroll.PubSub, "alerts", {:alert_created, alert})
   end
 
   defp resolve_alert(alert) do
     Logger.info("Resolving alert #{alert.id}")
-    Alerts.update_alert(alert, %{resolved_at: DateTime.utc_now()})
+    {:ok, alert} = Alerts.update_alert(alert, %{resolved_at: DateTime.utc_now()})
+
+    Phoenix.PubSub.broadcast(BidirectionalScroll.PubSub, "alerts", {:alert_updated, alert})
   end
 end

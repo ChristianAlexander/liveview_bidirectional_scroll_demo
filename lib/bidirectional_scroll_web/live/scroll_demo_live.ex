@@ -4,11 +4,38 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
   alias BidirectionalScroll.Alerts
 
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(BidirectionalScroll.PubSub, "alerts")
+    end
+
     alerts = Alerts.list_alerts(limit: 5)
 
     socket = assign(socket, alerts: alerts)
 
     {:ok, socket}
+  end
+
+  def handle_info({:alert_created, alert}, socket) do
+    alerts = socket.assigns.alerts
+
+    alerts = [alert | alerts]
+    socket = assign(socket, alerts: alerts)
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:alert_updated, %{id: alert_id} = alert}, socket) do
+    alerts = socket.assigns.alerts
+
+    alerts =
+      Enum.map(alerts, fn
+        %{id: ^alert_id} -> alert
+        a -> a
+      end)
+
+    socket = assign(socket, alerts: alerts)
+
+    {:noreply, socket}
   end
 
   def handle_event("load-more", _value, socket) do

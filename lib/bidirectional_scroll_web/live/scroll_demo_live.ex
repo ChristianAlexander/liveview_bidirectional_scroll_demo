@@ -12,29 +12,16 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
 
     socket = assign(socket, alerts: alerts)
 
-    {:ok, socket}
+    {:ok, socket, temporary_assigns: [alerts: []]}
   end
 
   def handle_info({:alert_created, alert}, socket) do
-    alerts = socket.assigns.alerts
-
-    alerts = [alert | alerts]
-    socket = assign(socket, alerts: alerts)
-
+    socket = assign(socket, alerts: [alert])
     {:noreply, socket}
   end
 
-  def handle_info({:alert_updated, %{id: alert_id} = alert}, socket) do
-    alerts = socket.assigns.alerts
-
-    alerts =
-      Enum.map(alerts, fn
-        %{id: ^alert_id} -> alert
-        a -> a
-      end)
-
-    socket = assign(socket, alerts: alerts)
-
+  def handle_info({:alert_updated, alert}, socket) do
+    socket = assign(socket, alerts: [alert])
     {:noreply, socket}
   end
 
@@ -61,9 +48,9 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
           <th>Resolved At</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="alert-list" phx-update="prepend">
         <%= for alert <- @alerts do %>
-          <tr>
+          <tr id={"alert-#{alert.id}"} >
             <td><%= alert.id %></td>
             <td><%= alert.started_at %></td>
             <td><%= alert.resolved_at %></td>

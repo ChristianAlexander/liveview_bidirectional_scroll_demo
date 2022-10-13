@@ -79,7 +79,7 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
         <% end %>
       </tbody>
     </table>
-    <button phx-click="load-more">Load More</button>
+    <button id="alerts-load-more" phx-hook="InfiniteScrollButton" phx-click="load-more">Load More</button>
     """
   end
 end

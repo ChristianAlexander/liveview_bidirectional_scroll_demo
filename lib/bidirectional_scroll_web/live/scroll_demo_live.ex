@@ -15,19 +15,30 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
     socket =
       assign(socket,
         alerts: alerts,
-        oldest_alert_started_at: oldest_loaded_alert.started_at
+        oldest_alert_started_at: oldest_loaded_alert.started_at,
+        update_direction: "append"
       )
 
     {:ok, socket, temporary_assigns: [alerts: []]}
   end
 
   def handle_info({:alert_created, alert}, socket) do
-    socket = assign(socket, alerts: [alert])
+    socket =
+      assign(socket,
+        alerts: [alert],
+        update_direction: "prepend"
+      )
+
     {:noreply, socket}
   end
 
   def handle_info({:alert_updated, alert}, socket) do
-    socket = assign(socket, alerts: [alert])
+    socket =
+      assign(socket,
+        alerts: [alert],
+        update_direction: "prepend"
+      )
+
     {:noreply, socket}
   end
 
@@ -40,7 +51,8 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
     socket =
       assign(socket,
         alerts: alerts,
-        oldest_alert_started_at: oldest_loaded_alert.started_at
+        oldest_alert_started_at: oldest_loaded_alert.started_at,
+        update_direction: "append"
       )
 
     {:noreply, socket}
@@ -57,7 +69,7 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
           <th>Resolved At</th>
         </tr>
       </thead>
-      <tbody id="alert-list" phx-update="prepend">
+      <tbody id="alert-list" phx-update={@update_direction}>
         <%= for alert <- @alerts do %>
           <tr id={"alert-#{alert.id}"} >
             <td><%= alert.id %></td>

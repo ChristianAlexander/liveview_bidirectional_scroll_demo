@@ -15,7 +15,8 @@ defmodule BidirectionalScroll.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: BidirectionalScroll.PubSub},
       # Start the Endpoint (http/https)
-      BidirectionalScrollWeb.Endpoint
+      BidirectionalScrollWeb.Endpoint,
+      BidirectionalScroll.AlertPublisher
       # Start a worker by calling: BidirectionalScroll.Worker.start_link(arg)
       # {BidirectionalScroll.Worker, arg}
     ]

@@ -11,6 +11,18 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
     {:ok, socket}
   end
 
+  def handle_event("load-more", _value, socket) do
+    alerts = socket.assigns.alerts
+
+    oldest_loaded_alert = Enum.min_by(alerts, & &1.started_at, NaiveDateTime)
+    older_alerts = Alerts.list_alerts(started_before: oldest_loaded_alert.started_at, limit: 5)
+
+    alerts = alerts ++ older_alerts
+    socket = assign(socket, alerts: alerts)
+
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <h1>Alerts</h1>
@@ -32,6 +44,7 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
         <% end %>
       </tbody>
     </table>
+    <button phx-click="load-more">Load More</button>
     """
   end
 end

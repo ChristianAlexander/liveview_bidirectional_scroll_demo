@@ -10,7 +10,13 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
 
     alerts = Alerts.list_alerts(limit: 5)
 
-    socket = assign(socket, alerts: alerts)
+    oldest_loaded_alert = Enum.min_by(alerts, & &1.started_at, NaiveDateTime)
+
+    socket =
+      assign(socket,
+        alerts: alerts,
+        oldest_alert_started_at: oldest_loaded_alert.started_at
+      )
 
     {:ok, socket, temporary_assigns: [alerts: []]}
   end
@@ -26,13 +32,16 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
   end
 
   def handle_event("load-more", _value, socket) do
-    alerts = socket.assigns.alerts
+    oldest_alert_started_at = socket.assigns.oldest_alert_started_at
 
+    alerts = Alerts.list_alerts(started_before: oldest_alert_started_at, limit: 5)
     oldest_loaded_alert = Enum.min_by(alerts, & &1.started_at, NaiveDateTime)
-    older_alerts = Alerts.list_alerts(started_before: oldest_loaded_alert.started_at, limit: 5)
 
-    alerts = alerts ++ older_alerts
-    socket = assign(socket, alerts: alerts)
+    socket =
+      assign(socket,
+        alerts: alerts,
+        oldest_alert_started_at: oldest_loaded_alert.started_at
+      )
 
     {:noreply, socket}
   end

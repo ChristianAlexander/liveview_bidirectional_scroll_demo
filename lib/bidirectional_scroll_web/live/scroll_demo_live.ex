@@ -70,13 +70,11 @@ defmodule BidirectionalScrollWeb.Live.ScrollDemoLive do
         </tr>
       </thead>
       <tbody id="alert-list" phx-update={@update_direction}>
-        <%= for alert <- @alerts do %>
-          <tr id={"alert-#{alert.id}"} >
-            <td><%= alert.id %></td>
-            <td><%= alert.started_at %></td>
-            <td><%= alert.resolved_at %></td>
-          </tr>
-        <% end %>
+        <tr :for={alert <- @alerts} id={"alert-#{alert.id}"} >
+          <td><%= alert.id %></td>
+          <td><%= alert.started_at %></td>
+          <td><%= alert.resolved_at %></td>
+        </tr>
       </tbody>
     </table>
     <button id="alerts-load-more" phx-hook="InfiniteScrollButton" phx-click="load-more">Load More</button>
